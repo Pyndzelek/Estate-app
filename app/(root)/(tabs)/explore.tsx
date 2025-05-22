@@ -51,6 +51,7 @@ const Explore = () => {
           <RegularCard item={item} onPress={() => handleCardPress(item.$id)} />
         )}
         keyExtractor={(item) => item.$id}
+        className="flex-1" // Ensure FlatList takes up available vertical space
         contentContainerClassName="pb-32 px-5"
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
