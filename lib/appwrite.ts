@@ -128,7 +128,7 @@ export async function getProperties({
       buildQuery.push(
         Query.or([
           Query.search("name", query),
-          Query.search("adress", query),
+          Query.search("address", query),
           Query.search("type", query),
         ])
       );
