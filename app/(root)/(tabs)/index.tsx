@@ -5,7 +5,7 @@ import icons from "@/constants/icons";
 import { getLatestProperties, getProperties } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
 import { useAppwrite } from "@/lib/useAppwitre";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -33,6 +33,8 @@ export default function Index() {
     },
   });
 
+  const handleCardPress = (id: string) => router.push(`/properties/${id}`);
+
   useEffect(() => {
     refetch({
       filter: params.filter || "All",
@@ -45,7 +47,9 @@ export default function Index() {
     <SafeAreaView className="bg-white h-full">
       <FlatList
         data={properties}
-        renderItem={({ item }) => <RegularCard />}
+        renderItem={({ item }) => (
+          <RegularCard item={item} onPress={() => handleCardPress(item.$id)} />
+        )}
         keyExtractor={(item) => item.toString()}
         numColumns={2}
         contentContainerClassName="pb-32"
@@ -87,7 +91,12 @@ export default function Index() {
               </View>
               <FlatList
                 data={latestProperties}
-                renderItem={({ item }) => <FeaturedCard />}
+                renderItem={({ item }) => (
+                  <FeaturedCard
+                    item={item}
+                    onPress={() => handleCardPress(item.$id)}
+                  />
+                )}
                 keyExtractor={(item) => item.toString()}
                 horizontal
                 bounces={false}
