@@ -2,17 +2,49 @@ import { FeaturedCard, RegularCard } from "@/components/Cards";
 import Filters from "@/components/Filters";
 import Search from "@/components/Search";
 import icons from "@/constants/icons";
+import { getLatestProperties, getProperties } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
+import { useAppwrite } from "@/lib/useAppwitre";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const { user } = useGlobalContext();
 
+  const params = useLocalSearchParams<{ query?: string; filter?: string }>();
+
+  const { data: latestProperties, loading: latestPropertiesLoading } =
+    useAppwrite({
+      fn: getLatestProperties,
+    });
+
+  const {
+    data: properties,
+    loading,
+    refetch,
+  } = useAppwrite({
+    fn: getProperties,
+    params: {
+      filter: params.filter || "All",
+      query: params.query || "",
+      limit: 6,
+    },
+  });
+
+  useEffect(() => {
+    refetch({
+      filter: params.filter || "All",
+      query: params.query || "",
+      limit: 6,
+    });
+  }, [params.query, params.filter]);
+
   return (
     <SafeAreaView className="bg-white h-full">
       <FlatList
-        data={[1, 2, 3]}
+        data={properties}
         renderItem={({ item }) => <RegularCard />}
         keyExtractor={(item) => item.toString()}
         numColumns={2}
@@ -54,7 +86,7 @@ export default function Index() {
                 </TouchableOpacity>
               </View>
               <FlatList
-                data={[1, 2, 3]}
+                data={latestProperties}
                 renderItem={({ item }) => <FeaturedCard />}
                 keyExtractor={(item) => item.toString()}
                 horizontal
